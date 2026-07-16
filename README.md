@@ -58,3 +58,13 @@ src/
 ## E2E テスト
 
 `?e2e=1` クエリで練習画面はマイク取得をスキップしダミー結果を生成するため、CI/ヘッドレス環境で全フローを通す。
+
+## GitHub Pages へのデプロイ
+
+`main` ブランチへの push で `.github/workflows/deploy.yml` が自動的にビルドして GitHub Pages に公開する。
+
+初回のみ、リポジトリの Settings → Pages → Build and deployment → Source を **GitHub Actions** に設定しておく。
+
+公開URL: `https://<owner>.github.io/horn-practice/`
+
+マイク入力（`getUserMedia`）は HTTPS 配信が必須だが、GitHub Pages は標準で HTTPS 配信のため追加設定は不要。
