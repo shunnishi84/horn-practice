@@ -1,10 +1,10 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
 import type { MiddlewareHandler } from 'hono';
 import type { Env } from './types';
 
 const JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
 
-let jwks: ReturnType<typeof createRemoteJWKSet> | null = null;
+let remoteJwks: JWTVerifyGetKey | null = null;
 
 export interface AuthedUser {
   uid: string;
@@ -18,6 +18,27 @@ declare module 'hono' {
   }
 }
 
+export async function verifyFirebaseToken(
+  token: string,
+  projectId: string,
+  getKey: JWTVerifyGetKey,
+): Promise<AuthedUser> {
+  const { payload } = await jwtVerify(token, getKey, {
+    issuer: `https://securetoken.google.com/${projectId}`,
+    audience: projectId,
+  });
+
+  if (typeof payload.sub !== 'string') {
+    throw new Error('invalid token subject');
+  }
+
+  return {
+    uid: payload.sub,
+    email: typeof payload.email === 'string' ? payload.email : undefined,
+    displayName: typeof payload.name === 'string' ? payload.name : undefined,
+  };
+}
+
 export const requireAuth: MiddlewareHandler<{ Bindings: Env }> = async (c, next) => {
   const header = c.req.header('Authorization');
   const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : null;
@@ -25,25 +46,13 @@ export const requireAuth: MiddlewareHandler<{ Bindings: Env }> = async (c, next)
     return c.json({ error: 'missing bearer token' }, 401);
   }
 
-  if (!jwks) {
-    jwks = createRemoteJWKSet(new URL(JWKS_URL));
+  if (!remoteJwks) {
+    remoteJwks = createRemoteJWKSet(new URL(JWKS_URL));
   }
 
   try {
-    const { payload } = await jwtVerify(token, jwks, {
-      issuer: `https://securetoken.google.com/${c.env.FIREBASE_PROJECT_ID}`,
-      audience: c.env.FIREBASE_PROJECT_ID,
-    });
-
-    if (typeof payload.sub !== 'string') {
-      return c.json({ error: 'invalid token subject' }, 401);
-    }
-
-    c.set('user', {
-      uid: payload.sub,
-      email: typeof payload.email === 'string' ? payload.email : undefined,
-      displayName: typeof payload.name === 'string' ? payload.name : undefined,
-    });
+    const user = await verifyFirebaseToken(token, c.env.FIREBASE_PROJECT_ID, remoteJwks);
+    c.set('user', user);
   } catch {
     return c.json({ error: 'invalid or expired token' }, 401);
   }
