@@ -13,39 +13,38 @@ export default function Home() {
   const daily = aggregateDaily(sessions);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <section>
-        <h1 className="text-2xl font-bold mb-2">今日のサマリー</h1>
+        <h1 className="text-2xl font-extrabold mb-3">☀️ 今日のサマリー</h1>
         <div className="grid grid-cols-3 gap-3">
-          <Stat label="練習時間" value={`${Math.round(todaySeconds / 60)} 分`} testid="today-minutes" />
-          <Stat label="平均スコア" value={todays.length ? `${todayAvg}` : '—'} testid="today-score" />
-          <Stat label="ストリーク" value={`${streak.current} 日`} testid="streak-days" />
+          <Stat icon="⏱️" label="練習時間" value={`${Math.round(todaySeconds / 60)} 分`} accent="text-pop-sky" testid="today-minutes" />
+          <Stat icon="💯" label="平均スコア" value={todays.length ? `${todayAvg}` : '—'} accent="text-pop-orange" testid="today-score" />
+          <Stat icon="🔥" label="ストリーク" value={`${streak.current} 日`} accent="text-pop-pink" testid="streak-days" />
         </div>
       </section>
 
       <section className="flex gap-3">
-        <Link
-          to="/presets"
-          className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-6 rounded-lg"
-          data-testid="start-practice"
-        >
-          練習を始める
+        <Link to="/presets" className="btn-pop text-lg" data-testid="start-practice">
+          🎺 練習を始める
         </Link>
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">直近セッション</h2>
+        <h2 className="text-lg font-extrabold mb-3">🎵 直近セッション</h2>
         {sessions.length === 0 ? (
-          <div className="text-slate-400 text-sm" data-testid="no-sessions">まだセッションがありません</div>
+          <div className="card p-6 text-center text-muted font-bold" data-testid="no-sessions">
+            まだセッションがありません<br />
+            <span className="text-2xl">🎷 さっそく1曲吹いてみよう！</span>
+          </div>
         ) : (
           <ul className="space-y-2">
             {sessions.slice(0, 5).map((s) => (
-              <li key={s.id} className="flex justify-between bg-slate-800 rounded p-3 text-sm">
-                <Link to={`/result/${s.id}`} className="hover:underline">
+              <li key={s.id} className="card flex items-center justify-between gap-3 p-4 text-sm transition hover:-translate-y-0.5 hover:border-pop-pink">
+                <Link to={`/result/${s.id}`} className="font-bold hover:text-pop-pink">
                   {s.presetTitle}
                 </Link>
-                <span className="text-slate-400">{new Date(s.startedAt).toLocaleString('ja-JP')}</span>
-                <span className="font-bold">{s.totalScore}</span>
+                <span className="text-muted">{new Date(s.startedAt).toLocaleString('ja-JP')}</span>
+                <span className="font-extrabold text-lg text-pop-violet">{s.totalScore}<span className="text-xs text-muted">点</span></span>
               </li>
             ))}
           </ul>
@@ -53,18 +52,21 @@ export default function Home() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">活動カレンダー</h2>
-        <HeatmapCalendar daily={daily} metric="time" days={120} />
+        <h2 className="text-lg font-extrabold mb-3">🗓️ 活動カレンダー</h2>
+        <div className="card p-4">
+          <HeatmapCalendar daily={daily} metric="time" days={120} />
+        </div>
       </section>
     </div>
   );
 }
 
-function Stat({ label, value, testid }: { label: string; value: string; testid?: string }) {
+function Stat({ icon, label, value, accent, testid }: { icon: string; label: string; value: string; accent: string; testid?: string }) {
   return (
-    <div className="bg-slate-800 rounded-lg p-4 text-center" data-testid={testid}>
-      <div className="text-xs text-slate-400">{label}</div>
-      <div className="text-2xl font-bold">{value}</div>
+    <div className="card p-4 text-center" data-testid={testid}>
+      <div className="text-xl">{icon}</div>
+      <div className="text-xs font-bold text-muted mt-1">{label}</div>
+      <div className={`text-2xl font-extrabold ${accent}`}>{value}</div>
     </div>
   );
 }

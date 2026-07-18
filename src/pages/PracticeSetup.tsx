@@ -26,9 +26,9 @@ export default function PracticeSetup() {
 
   if (!preset) {
     return (
-      <div>
-        <p>プリセットが見つかりません</p>
-        <Link to="/presets" className="text-sky-400 underline">戻る</Link>
+      <div className="card p-6 text-center space-y-2">
+        <p className="font-bold">😢 プリセットが見つかりません</p>
+        <Link to="/presets" className="text-pop-pink font-bold underline">戻る</Link>
       </div>
     );
   }
@@ -38,12 +38,12 @@ export default function PracticeSetup() {
   };
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">{preset.title}</h1>
-      <div className="bg-slate-800 rounded-lg p-3 overflow-x-auto" data-testid="score-preview">
-        <div className="flex gap-1 min-w-max">
+    <div className="space-y-5">
+      <h1 className="text-2xl font-extrabold">🎼 {preset.title}</h1>
+      <div className="card p-3 overflow-x-auto" data-testid="score-preview">
+        <div className="flex gap-1.5 min-w-max">
           {preset.notes.map((n, i) => (
-            <span key={i} className="px-2 py-1 rounded bg-slate-700 text-sm font-mono">
+            <span key={i} className="px-2.5 py-1 rounded-full bg-surface2 border-2 border-line text-sm font-bold text-pop-violet">
               {n.isRest ? '—' : concertToWritten(n.pitch, settings.transposition)}
             </span>
           ))}
@@ -51,8 +51,8 @@ export default function PracticeSetup() {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-3">
-        <label className="block">
-          <span className="text-sm text-slate-400">BPM: {bpm}</span>
+        <label className="card p-4 block">
+          <span className="text-sm font-bold text-muted">🥁 BPM: <span className="text-pop-pink">{bpm}</span></span>
           <input
             type="range"
             min={40}
@@ -68,15 +68,15 @@ export default function PracticeSetup() {
             max={200}
             value={bpm}
             onChange={(e) => setBpm(parseInt(e.target.value) || 80)}
-            className="w-24 bg-slate-800 rounded px-2 py-1 text-sm mt-1"
+            className="w-24 select-pop text-sm mt-2"
             data-testid="bpm-input"
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm text-slate-400">楽器</span>
+        <label className="card p-4 block">
+          <span className="text-sm font-bold text-muted">🎷 楽器</span>
           <select
-            className="w-full bg-slate-800 rounded px-2 py-1.5"
+            className="w-full select-pop mt-2"
             value={settings.instrument}
             onChange={(e) => updateSettings({ instrument: e.target.value as any })}
             data-testid="instrument-select"
@@ -89,10 +89,10 @@ export default function PracticeSetup() {
           </select>
         </label>
 
-        <label className="block">
-          <span className="text-sm text-slate-400">移調</span>
+        <label className="card p-4 block">
+          <span className="text-sm font-bold text-muted">🎵 移調</span>
           <select
-            className="w-full bg-slate-800 rounded px-2 py-1.5"
+            className="w-full select-pop mt-2"
             value={settings.transposition}
             onChange={(e) => updateSettings({ transposition: e.target.value as Transposition })}
             data-testid="transposition-select"
@@ -104,10 +104,10 @@ export default function PracticeSetup() {
           </select>
         </label>
 
-        <label className="block">
-          <span className="text-sm text-slate-400">マイクデバイス</span>
+        <label className="card p-4 block">
+          <span className="text-sm font-bold text-muted">🎤 マイクデバイス</span>
           <select
-            className="w-full bg-slate-800 rounded px-2 py-1.5"
+            className="w-full select-pop mt-2"
             value={settings.inputDeviceId ?? ''}
             onChange={(e) => updateSettings({ inputDeviceId: e.target.value || undefined })}
             data-testid="device-select"
@@ -122,12 +122,8 @@ export default function PracticeSetup() {
         </label>
       </div>
 
-      <button
-        onClick={start}
-        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg"
-        data-testid="start-countdown"
-      >
-        3・2・1で開始
+      <button onClick={start} className="btn-pop text-lg" data-testid="start-countdown">
+        🚀 3・2・1で開始
       </button>
     </div>
   );

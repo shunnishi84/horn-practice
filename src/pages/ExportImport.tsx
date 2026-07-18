@@ -33,20 +33,20 @@ export default function ExportPage() {
 
   return (
     <div className="space-y-4" data-testid="export-page">
-      <h1 className="text-2xl font-bold">エクスポート / インポート</h1>
-      <p className="text-sm text-slate-400">現在のセッション数: {sessions.length}</p>
+      <h1 className="text-2xl font-extrabold">💾 エクスポート / インポート</h1>
+      <p className="text-sm font-bold text-muted">現在のセッション数: <span className="text-pop-violet">{sessions.length}</span></p>
 
-      <section className="bg-slate-800 rounded p-4 space-y-2">
-        <h2 className="font-semibold">エクスポート</h2>
-        <p className="text-sm text-slate-400">設定・セッション履歴をひとつのファイルに保存します。</p>
-        <button onClick={onExport} className="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded font-bold" data-testid="export-btn">
+      <section className="card p-5 space-y-3">
+        <h2 className="font-extrabold">📤 エクスポート</h2>
+        <p className="text-sm font-bold text-muted">設定・セッション履歴をひとつのファイルに保存します。</p>
+        <button onClick={onExport} className="btn-pop" data-testid="export-btn">
           ダウンロード (.windtrn)
         </button>
       </section>
 
-      <section className="bg-slate-800 rounded p-4 space-y-2">
-        <h2 className="font-semibold">インポート</h2>
-        <label className="flex items-center gap-2 text-sm">
+      <section className="card p-5 space-y-3">
+        <h2 className="font-extrabold">📥 インポート</h2>
+        <label className="flex items-center gap-2 text-sm font-bold">
           <input type="checkbox" checked={merge} onChange={(e) => setMerge(e.target.checked)} />
           既存データに追加マージ（オフ：上書き）
         </label>
@@ -59,7 +59,7 @@ export default function ExportPage() {
         />
       </section>
 
-      {msg && <div className="text-emerald-400 text-sm" data-testid="export-msg">{msg}</div>}
+      {msg && <div className="text-pop-teal text-sm font-bold" data-testid="export-msg">{msg}</div>}
     </div>
   );
 }

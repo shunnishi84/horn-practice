@@ -8,9 +8,9 @@ export default function Result() {
 
   if (!session) {
     return (
-      <div data-testid="result-not-found">
-        <p>結果が見つかりません</p>
-        <Link to="/" className="text-sky-400 underline">ホームへ</Link>
+      <div className="card p-6 text-center space-y-2" data-testid="result-not-found">
+        <p className="font-bold">😢 結果が見つかりません</p>
+        <Link to="/" className="text-pop-pink font-bold underline">ホームへ</Link>
       </div>
     );
   }
@@ -20,32 +20,41 @@ export default function Result() {
     .sort((a, b) => a.totalScore - b.totalScore)
     .slice(0, 3);
 
+  const cheer =
+    session.totalScore >= 90 ? '🎉 すばらしい！' :
+    session.totalScore >= 75 ? '✨ いい調子！' :
+    session.totalScore >= 50 ? '💪 あと少し！' :
+    '🌱 コツコツいこう！';
+
   return (
     <div className="space-y-6" data-testid="result-page">
       <section>
-        <div className="text-center">
-          <div className="text-sm text-slate-400">総合スコア</div>
-          <div className="text-7xl font-bold text-sky-400" data-testid="total-score">{session.totalScore}</div>
+        <div className="card p-6 text-center animate-popin">
+          <div className="text-sm font-bold text-muted">総合スコア</div>
+          <div className="text-7xl font-extrabold text-pop-gradient" data-testid="total-score">{session.totalScore}</div>
+          <div className="text-xl font-extrabold mt-2">{cheer}</div>
         </div>
       </section>
 
       <section className="grid grid-cols-3 gap-3">
-        <ScoreBox label="音程" value={session.pitchScore} testid="score-pitch" />
-        <ScoreBox label="タイミング" value={session.timingScore} testid="score-timing" />
-        <ScoreBox label="音価" value={session.durationScore} testid="score-duration" />
+        <ScoreBox icon="🎯" label="音程" value={session.pitchScore} accent="text-pop-pink" testid="score-pitch" />
+        <ScoreBox icon="⏰" label="タイミング" value={session.timingScore} accent="text-pop-sky" testid="score-timing" />
+        <ScoreBox icon="📏" label="音価" value={session.durationScore} accent="text-pop-teal" testid="score-duration" />
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">3軸の比較</h2>
-        <RadarChart pitch={session.pitchScore} timing={session.timingScore} duration={session.durationScore} />
+        <h2 className="text-lg font-extrabold mb-3">📊 3軸の比較</h2>
+        <div className="card p-4">
+          <RadarChart pitch={session.pitchScore} timing={session.timingScore} duration={session.durationScore} />
+        </div>
       </section>
 
       {weakest.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold mb-2">苦手だった音</h2>
+          <h2 className="text-lg font-extrabold mb-3">🤔 苦手だった音</h2>
           <ul className="flex gap-2 flex-wrap" data-testid="weakest">
             {weakest.map((r) => (
-              <li key={r.noteIndex} className="bg-rose-900/40 border border-rose-700 px-3 py-1 rounded text-sm">
+              <li key={r.noteIndex} className="bg-pop-rose/10 border-2 border-pop-rose text-pop-rose font-bold px-4 py-1.5 rounded-full text-sm">
                 {r.expectedPitch}: {r.totalScore}点
               </li>
             ))}
@@ -54,10 +63,10 @@ export default function Result() {
       )}
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">ノート別結果</h2>
-        <div className="overflow-x-auto">
+        <h2 className="text-lg font-extrabold mb-3">📝 ノート別結果</h2>
+        <div className="card p-4 overflow-x-auto">
           <table className="w-full text-sm" data-testid="note-table">
-            <thead className="text-slate-400">
+            <thead className="text-muted font-bold">
               <tr>
                 <th className="px-2 py-1 text-left">#</th>
                 <th className="px-2 py-1 text-left">音</th>
@@ -70,13 +79,13 @@ export default function Result() {
             </thead>
             <tbody>
               {session.noteResults.map((r) => (
-                <tr key={r.noteIndex} className="border-t border-slate-700">
+                <tr key={r.noteIndex} className="border-t-2 border-line">
                   <td className="px-2 py-1">{r.noteIndex + 1}</td>
-                  <td className="px-2 py-1 font-mono">{r.expectedPitch}</td>
+                  <td className="px-2 py-1 font-bold text-pop-violet">{r.expectedPitch}</td>
                   <td className="px-2 py-1 text-center">{r.pitchScore}</td>
                   <td className="px-2 py-1 text-center">{r.timingScore}</td>
                   <td className="px-2 py-1 text-center">{r.durationScore}</td>
-                  <td className="px-2 py-1 text-center font-bold">{r.totalScore}</td>
+                  <td className="px-2 py-1 text-center font-extrabold">{r.totalScore}</td>
                   <td className="px-2 py-1 text-center">
                     {r.pitchDeviationCents != null ? `${r.pitchDeviationCents > 0 ? '+' : ''}${r.pitchDeviationCents.toFixed(1)}` : '—'}
                   </td>
@@ -88,30 +97,24 @@ export default function Result() {
       </section>
 
       <section className="flex gap-3 flex-wrap">
-        <Link
-          to={`/practice/${session.presetId}?bpm=${session.bpm}`}
-          className="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded font-bold"
-          data-testid="retry"
-        >
-          もう一度
+        <Link to={`/practice/${session.presetId}?bpm=${session.bpm}`} className="btn-pop" data-testid="retry">
+          🔁 もう一度
         </Link>
-        <Link
-          to={`/setup/${session.presetId}`}
-          className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded"
-        >
+        <Link to={`/setup/${session.presetId}`} className="btn-sub">
           設定を変えて再挑戦
         </Link>
-        <Link to="/" className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded">ホームへ</Link>
+        <Link to="/" className="btn-sub">ホームへ</Link>
       </section>
     </div>
   );
 }
 
-function ScoreBox({ label, value, testid }: { label: string; value: number; testid?: string }) {
+function ScoreBox({ icon, label, value, accent, testid }: { icon: string; label: string; value: number; accent: string; testid?: string }) {
   return (
-    <div className="bg-slate-800 rounded-lg p-3 text-center" data-testid={testid}>
-      <div className="text-xs text-slate-400">{label}</div>
-      <div className="text-3xl font-bold">{value}</div>
+    <div className="card p-3 text-center" data-testid={testid}>
+      <div className="text-lg">{icon}</div>
+      <div className="text-xs font-bold text-muted">{label}</div>
+      <div className={`text-3xl font-extrabold ${accent}`}>{value}</div>
     </div>
   );
 }
@@ -130,11 +133,11 @@ function RadarChart({ pitch, timing, duration }: { pitch: number; timing: number
   const polyStr = points.map((p) => p.join(',')).join(' ');
   return (
     <svg viewBox="0 0 200 200" className="w-48 h-48 mx-auto">
-      <polygon points={[ptOuter(0), ptOuter(1), ptOuter(2)].map((p) => p.join(',')).join(' ')} fill="none" stroke="#334155" />
-      <polygon points={polyStr} fill="rgba(56,189,248,0.4)" stroke="#38bdf8" strokeWidth="2" />
-      <text x={100} y={20} textAnchor="middle" fill="#cbd5e1" fontSize={12}>音程</text>
-      <text x={185} y={170} textAnchor="end" fill="#cbd5e1" fontSize={12}>タイミング</text>
-      <text x={15} y={170} textAnchor="start" fill="#cbd5e1" fontSize={12}>音価</text>
+      <polygon points={[ptOuter(0), ptOuter(1), ptOuter(2)].map((p) => p.join(',')).join(' ')} fill="none" stroke="var(--c-line)" strokeWidth="2" />
+      <polygon points={polyStr} fill="rgba(255,79,154,0.35)" stroke="#ff4f9a" strokeWidth="3" strokeLinejoin="round" />
+      <text x={100} y={20} textAnchor="middle" fill="var(--c-muted)" fontSize={12} fontWeight="bold">音程</text>
+      <text x={185} y={170} textAnchor="end" fill="var(--c-muted)" fontSize={12} fontWeight="bold">タイミング</text>
+      <text x={15} y={170} textAnchor="start" fill="var(--c-muted)" fontSize={12} fontWeight="bold">音価</text>
     </svg>
   );
 }

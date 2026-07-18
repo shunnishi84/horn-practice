@@ -33,21 +33,26 @@ export default function App() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-300">
-        読み込み中…
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 text-muted">
+        <div className="text-5xl animate-floaty">🎺</div>
+        <div className="font-bold">読み込み中…</div>
       </div>
     );
   }
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-700'}`;
+    `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-gradient-to-r from-pop-violet to-pop-pink text-white shadow-pop' : 'text-muted hover:bg-surface2 hover:text-ink'}`;
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-slate-800 border-b border-slate-700">
+      <div className="h-1.5 bg-gradient-to-r from-pop-pink via-pop-yellow via-pop-teal to-pop-violet" />
+      <header className="bg-surface border-b-2 border-line sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
-          <NavLink to="/" className="text-lg font-bold text-sky-400">WindTrainer</NavLink>
-          <nav className="flex gap-2 flex-wrap items-center" data-testid="main-nav">
+          <NavLink to="/" className="flex items-center gap-2 text-xl font-extrabold">
+            <span className="text-2xl">🎺</span>
+            <span className="text-pop-gradient">WindTrainer</span>
+          </NavLink>
+          <nav className="flex gap-1.5 flex-wrap items-center" data-testid="main-nav">
             <NavLink to="/" end className={navClass}>ホーム</NavLink>
             <NavLink to="/presets" className={navClass}>プリセット</NavLink>
             <NavLink to="/stats" className={navClass}>統計</NavLink>
@@ -57,7 +62,7 @@ export default function App() {
               user ? (
                 <button
                   onClick={() => logout()}
-                  className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-700"
+                  className="px-4 py-2 rounded-full text-sm font-bold text-muted hover:bg-surface2 hover:text-ink transition"
                   title={user.email ?? undefined}
                   data-testid="logout-button"
                 >
@@ -66,7 +71,7 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => login()}
-                  className="px-3 py-2 rounded-md text-sm font-medium bg-slate-700 text-slate-100 hover:bg-slate-600"
+                  className="px-4 py-2 rounded-full text-sm font-bold bg-surface2 border-2 border-line text-ink hover:border-pop-violet transition"
                   data-testid="login-button"
                 >
                   ログイン
@@ -89,8 +94,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-      <footer className="text-center text-xs text-slate-500 py-4">
-        WindTrainer · オフラインで動く管楽器練習補助アプリ
+      <footer className="text-center text-xs font-bold text-muted py-4">
+        🎵 WindTrainer · オフラインで動く管楽器練習補助アプリ 🎵
       </footer>
     </div>
   );

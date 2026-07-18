@@ -4,9 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WindTrainer - 管楽器練習アプリ</title>
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#1b1240" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      // Load the rounded webfont after window load so an offline or slow
+      // network never delays first paint (the app must work fully offline).
+      window.addEventListener('load', function () {
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href =
+          'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap';
+        document.head.appendChild(l);
+      });
+    </script>
   </head>
-  <body class="bg-slate-900 text-slate-100">
+  <body class="bg-base text-ink">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
