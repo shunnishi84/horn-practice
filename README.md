@@ -59,6 +59,16 @@ src/
 
 `?e2e=1` クエリで練習画面はマイク取得をスキップしダミー結果を生成するため、CI/ヘッドレス環境で全フローを通す。
 
+## クラウド同期（ログイン + 練習履歴のサーバー保存）
+
+デフォルトでは従来通り IndexedDB のみで動作する（ゲストモード）。以下を設定するとナビゲーションにログインボタンが現れ、Google ログイン後は練習履歴・設定が Cloudflare Workers API（`worker/` 参照）経由で D1 に保存される。
+
+1. Firebase プロジェクトを作成し、Authentication で Google プロバイダを有効化
+2. `worker/README.md` の手順で D1 作成・マイグレーション・Worker デプロイ
+3. `src/config.ts` の `firebaseConfig`（Firebase コンソールのウェブアプリ設定値）と `API_BASE_URL`（デプロイした Worker の URL）を実際の値に書き換える
+
+ログイン直後にローカルの履歴がサーバーへアップロードされる（セッション ID で重複排除されるため何度でも安全）。ログイン中の練習結果は IndexedDB とサーバーの両方に保存される。
+
 ## GitHub Pages へのデプロイ
 
 `main` ブランチへの push で `.github/workflows/deploy.yml` が自動的にビルドして GitHub Pages に公開する。

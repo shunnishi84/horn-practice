@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useAppStore } from './store/store';
+import { isCloudSyncConfigured } from './config';
 import Home from './pages/Home';
 import PresetSelect from './pages/PresetSelect';
 import PracticeSetup from './pages/PracticeSetup';
@@ -14,10 +15,16 @@ export default function App() {
   const loadAll = useAppStore((s) => s.loadAll);
   const loaded = useAppStore((s) => s.loaded);
   const theme = useAppStore((s) => s.settings.theme);
+  const initAuth = useAppStore((s) => s.initAuth);
+  const user = useAppStore((s) => s.user);
+  const syncing = useAppStore((s) => s.syncing);
+  const login = useAppStore((s) => s.login);
+  const logout = useAppStore((s) => s.logout);
 
   useEffect(() => {
     loadAll();
-  }, [loadAll]);
+    initAuth();
+  }, [loadAll, initAuth]);
 
   useEffect(() => {
     if (theme === 'light') document.body.classList.add('theme-light');
@@ -40,12 +47,32 @@ export default function App() {
       <header className="bg-slate-800 border-b border-slate-700">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
           <NavLink to="/" className="text-lg font-bold text-sky-400">WindTrainer</NavLink>
-          <nav className="flex gap-2 flex-wrap" data-testid="main-nav">
+          <nav className="flex gap-2 flex-wrap items-center" data-testid="main-nav">
             <NavLink to="/" end className={navClass}>ホーム</NavLink>
             <NavLink to="/presets" className={navClass}>プリセット</NavLink>
             <NavLink to="/stats" className={navClass}>統計</NavLink>
             <NavLink to="/settings" className={navClass}>設定</NavLink>
             <NavLink to="/data" className={navClass}>エクスポート</NavLink>
+            {isCloudSyncConfigured() && (
+              user ? (
+                <button
+                  onClick={() => logout()}
+                  className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-700"
+                  title={user.email ?? undefined}
+                  data-testid="logout-button"
+                >
+                  {syncing ? '同期中…' : `${user.displayName ?? user.email ?? 'アカウント'}｜ログアウト`}
+                </button>
+              ) : (
+                <button
+                  onClick={() => login()}
+                  className="px-3 py-2 rounded-md text-sm font-medium bg-slate-700 text-slate-100 hover:bg-slate-600"
+                  data-testid="login-button"
+                >
+                  ログイン
+                </button>
+              )
+            )}
           </nav>
         </div>
       </header>
