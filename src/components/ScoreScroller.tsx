@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import type { NoteEvent } from '../types';
 import { concertToWritten } from '../music/transposition';
 import type { Transposition } from '../types';
+import { StaffLines, TrebleClef, StaffNoteGlyph, StaffRestGlyph, STAFF_HEIGHT } from './StaffBits';
 
 interface Props {
   notes: NoteEvent[];
@@ -13,7 +14,13 @@ interface Props {
 }
 
 const PX_PER_BEAT = 80;
-const STAFF_H = 180;
+
+const STATUS_COLORS: Record<string, { head: string; bar: string }> = {
+  good: { head: 'bg-pop-teal border-pop-teal', bar: 'bg-pop-teal/40' },
+  warn: { head: 'bg-pop-yellow border-pop-yellow', bar: 'bg-pop-yellow/40' },
+  bad: { head: 'bg-pop-rose border-pop-rose', bar: 'bg-pop-rose/40' },
+  pending: { head: 'bg-pop-violet border-pop-violet', bar: 'bg-pop-violet/30' },
+};
 
 export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, perNoteStatus, liveCents }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,21 +46,13 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
     <div
       ref={containerRef}
       className="relative overflow-hidden bg-surface2 rounded-2xl border-2 border-line shadow-card"
-      style={{ height: STAFF_H }}
+      style={{ height: STAFF_HEIGHT }}
       data-testid="score-scroller"
     >
       {/* Center line */}
       <div className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-pop-pink to-pop-orange z-10" style={{ left: '50%' }} />
-      {/* Staff lines */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-px bg-line"
-            style={{ top: `${40 + i * 20}px` }}
-          />
-        ))}
-      </div>
+      <StaffLines />
+      <TrebleClef />
       {/* Notes */}
       <div
         className="absolute top-0 bottom-0"
@@ -67,24 +66,26 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
           const x = n.startBeat * PX_PER_BEAT;
           const w = n.durationBeats * PX_PER_BEAT - 4;
           const status = perNoteStatus?.[idx];
-          const color =
-            status === 'good'
-              ? 'bg-pop-teal/80 border-pop-teal'
-              : status === 'warn'
-                ? 'bg-pop-yellow/80 border-pop-yellow'
-                : status === 'bad'
-                  ? 'bg-pop-rose/80 border-pop-rose'
-                  : 'bg-pop-violet/50 border-pop-violet';
-          const written = n.isRest ? '—' : concertToWritten(n.pitch, transposition);
+          const colors = STATUS_COLORS[status ?? 'pending'];
           return (
             <div
               key={idx}
-              className={`absolute rounded-xl border-2 ${color} flex items-center justify-center text-sm font-extrabold text-white`}
-              style={{ left: x, width: w, top: 70, height: 40 }}
+              className="absolute top-0 bottom-0"
+              style={{ left: x, width: w }}
               data-testid={`note-${idx}`}
               data-status={status ?? 'pending'}
             >
-              {written}
+              {n.isRest ? (
+                <StaffRestGlyph x={0} width={w} durationBeats={n.durationBeats} />
+              ) : (
+                <StaffNoteGlyph
+                  written={concertToWritten(n.pitch, transposition)}
+                  x={0}
+                  width={w}
+                  headClass={colors.head}
+                  barClass={colors.bar}
+                />
+              )}
             </div>
           );
         })}

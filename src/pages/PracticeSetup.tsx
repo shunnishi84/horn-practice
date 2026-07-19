@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { getPreset } from '../music/presets';
 import { useAppStore } from '../store/store';
 import { INSTRUMENT_LIST } from '../music/instruments';
-import { concertToWritten } from '../music/transposition';
+import StaffPreview from '../components/StaffPreview';
 import { listAudioInputs } from '../audio/micInput';
 import type { Transposition } from '../types';
 
@@ -41,13 +41,7 @@ export default function PracticeSetup() {
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">🎼 {preset.title}</h1>
       <div className="card p-3 overflow-x-auto" data-testid="score-preview">
-        <div className="flex gap-1.5 min-w-max">
-          {preset.notes.map((n, i) => (
-            <span key={i} className="px-2.5 py-1 rounded-full bg-surface2 border-2 border-line text-sm font-bold text-pop-violet">
-              {n.isRest ? '—' : concertToWritten(n.pitch, settings.transposition)}
-            </span>
-          ))}
-        </div>
+        <StaffPreview notes={preset.notes} transposition={settings.transposition} />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-3">
