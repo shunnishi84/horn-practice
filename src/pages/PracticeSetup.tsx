@@ -14,10 +14,14 @@ export default function PracticeSetup() {
   const settings = useAppStore((s) => s.settings);
   const updateSettings = useAppStore((s) => s.updateSettings);
   const [bpm, setBpm] = useState(preset?.defaultBpm ?? 80);
+  const [beatsPerBar, setBeatsPerBar] = useState(preset?.timeSignature.numerator ?? 4);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   useEffect(() => {
-    if (preset) setBpm(preset.defaultBpm);
+    if (preset) {
+      setBpm(preset.defaultBpm);
+      setBeatsPerBar(preset.timeSignature.numerator);
+    }
   }, [preset]);
 
   useEffect(() => {
@@ -34,14 +38,18 @@ export default function PracticeSetup() {
   }
 
   const start = () => {
-    navigate(`/practice/${preset.id}?bpm=${bpm}`);
+    navigate(`/practice/${preset.id}?bpm=${bpm}&ts=${beatsPerBar}`);
   };
 
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">🎼 {preset.title}</h1>
       <div className="card p-3 overflow-x-auto" data-testid="score-preview">
-        <StaffPreview notes={preset.notes} transposition={settings.transposition} />
+        <StaffPreview
+          notes={preset.notes}
+          transposition={settings.transposition}
+          timeSignature={{ numerator: beatsPerBar, denominator: 4 }}
+        />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-3">
@@ -79,6 +87,20 @@ export default function PracticeSetup() {
               <option key={i.key} value={i.key}>
                 {i.displayName}
               </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="card p-4 block">
+          <span className="text-sm font-bold text-muted">🎼 拍子</span>
+          <select
+            className="w-full select-pop mt-2"
+            value={beatsPerBar}
+            onChange={(e) => setBeatsPerBar(parseInt(e.target.value))}
+            data-testid="time-signature-select"
+          >
+            {[2, 3, 4, 5, 6].map((n) => (
+              <option key={n} value={n}>{n}/4</option>
             ))}
           </select>
         </label>

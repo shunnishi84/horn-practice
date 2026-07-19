@@ -2,7 +2,12 @@ export class Metronome {
   private timer: number | null = null;
   private startTime = 0;
   private nextBeat = 0;
-  constructor(private ctx: AudioContext, private bpm: number, private onBeat?: (beatIndex: number) => void) {}
+  constructor(
+    private ctx: AudioContext,
+    private bpm: number,
+    private onBeat?: (beatIndex: number) => void,
+    private beatsPerBar = 4,
+  ) {}
 
   // startTime: AudioContext time of beat 0. Pass the same anchor used for
   // visual progress so clicks and the scroller share one clock.
@@ -13,7 +18,7 @@ export class Metronome {
     const tick = () => {
       const beatDur = 60 / this.bpm;
       while (this.startTime + this.nextBeat * beatDur < this.ctx.currentTime + 0.1) {
-        this.scheduleClick(this.startTime + this.nextBeat * beatDur, this.nextBeat % 4 === 0);
+        this.scheduleClick(this.startTime + this.nextBeat * beatDur, this.nextBeat % this.beatsPerBar === 0);
         this.onBeat?.(this.nextBeat);
         this.nextBeat++;
       }

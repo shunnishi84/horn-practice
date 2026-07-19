@@ -34,6 +34,16 @@ export function TrebleClef({ left = 8 }: { left?: number }) {
   );
 }
 
+export function TimeSignatureGlyph({ numerator, denominator, left = 84 }: { numerator: number; denominator: number; left?: number }) {
+  const digit = 'absolute -translate-x-1/2 -translate-y-1/2 font-extrabold';
+  return (
+    <div className="absolute top-0 bottom-0 select-none pointer-events-none z-10" style={{ left }} aria-hidden>
+      <div className={digit} style={{ top: STAFF_TOP + LINE_GAP, fontSize: 34, lineHeight: 1 }}>{numerator}</div>
+      <div className={digit} style={{ top: STAFF_TOP + LINE_GAP * 3, fontSize: 34, lineHeight: 1 }}>{denominator}</div>
+    </div>
+  );
+}
+
 interface NoteGlyphProps {
   written: string; // written pitch, e.g. "F#4"
   x: number;
