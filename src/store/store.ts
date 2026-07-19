@@ -43,6 +43,15 @@ interface AppState {
 const sortSessions = (sessions: Session[]) =>
   [...sessions].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
 
+// 設定の保存は直列化する。並行して走らせると完了順序が前後して
+// 古い値が最後に書き込まれることがある(ステッパー連打・スライダードラッグ時)。
+let settingsSaveChain: Promise<void> = Promise.resolve();
+function enqueueSettingsSave(save: () => Promise<void>): void {
+  settingsSaveChain = settingsSaveChain.then(save).catch((e) => {
+    console.error('設定の保存に失敗しました', e);
+  });
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
   settings: DEFAULT_SETTINGS,
   sessions: [],
@@ -88,10 +97,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     await signOutUser();
   },
   updateSettings: async (partial) => {
+    // 先にstateを更新してから永続化する。保存完了を待ってからだと、
+    // ステッパー連打やスライダードラッグ中の連続変更で古い値を基に
+    // 計算してしまい更新が失われる。
     const next = { ...get().settings, ...partial };
-    if (get().user) await apiSaveSettings(next);
-    else await dbSaveSettings(next);
     set({ settings: next });
+    enqueueSettingsSave(async () => {
+      if (get().user) await apiSaveSettings(next);
+      else await dbSaveSettings(next);
+    });
   },
   recordSession: async (s) => {
     // ログイン中でもIndexedDBに常に保存し、オフラインや未ログイン時の閲覧に備える
