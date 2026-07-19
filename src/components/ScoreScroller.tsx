@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { NoteEvent } from '../types';
 import { concertToWritten } from '../music/transposition';
 import type { Transposition } from '../types';
@@ -18,12 +18,19 @@ const STAFF_H = 180;
 export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, perNoteStatus, liveCents }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const beatsElapsed = (elapsedMs / 1000) * (bpm / 60);
+  // The now-line sits at 50% of the container; notes must be offset by the
+  // same amount so beat 0 is exactly under the line at elapsedMs=0.
+  const [playheadX, setPlayheadX] = useState(0);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      // No-op; render via transform
-    }
-  }, [elapsedMs]);
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setPlayheadX(el.clientWidth / 2);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const totalBeats = notes.reduce((m, n) => Math.max(m, n.startBeat + n.durationBeats), 0);
   const widthPx = totalBeats * PX_PER_BEAT + 800;
@@ -52,7 +59,7 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
         className="absolute top-0 bottom-0"
         style={{
           width: widthPx,
-          transform: `translateX(${-(beatsElapsed * PX_PER_BEAT) + 200}px)`,
+          transform: `translateX(${-(beatsElapsed * PX_PER_BEAT) + playheadX}px)`,
           willChange: 'transform',
         }}
       >

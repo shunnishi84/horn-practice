@@ -102,11 +102,16 @@ export default function Practice() {
   // Play loop
   useEffect(() => {
     if (phase !== 'play' || !preset) return;
+    // Anchor both the visual progress and the metronome to the audio clock,
+    // so the scroller and the clicks can never drift apart. Fall back to
+    // performance.now() when there is no AudioContext (E2E mode).
+    const audioCtx = micRef.current?.ctx ?? null;
+    const ctxStartTime = audioCtx ? audioCtx.currentTime : 0;
     startTsRef.current = performance.now();
     samplesRef.current = [];
     if (settings.metronomeOn && micRef.current && !isE2E) {
       metronomeRef.current = new Metronome(micRef.current.ctx, bpm);
-      metronomeRef.current.start();
+      metronomeRef.current.start(ctxStartTime);
     }
 
     const totalBeats = preset.notes.reduce((m, n) => Math.max(m, n.startBeat + n.durationBeats), 0);
@@ -117,8 +122,9 @@ export default function Practice() {
         rafRef.current = requestAnimationFrame(loop);
         return;
       }
-      const now = performance.now();
-      const t = now - startTsRef.current;
+      const t = audioCtx
+        ? (audioCtx.currentTime - ctxStartTime) * 1000
+        : performance.now() - startTsRef.current;
       setElapsedMs(t);
 
       if (detectorRef.current) {
