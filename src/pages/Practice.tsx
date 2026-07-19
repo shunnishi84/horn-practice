@@ -38,6 +38,43 @@ export default function Practice() {
   const [perNoteStatus, setPerNoteStatus] = useState<Record<number, 'good' | 'warn' | 'bad'>>({});
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Tuner pane width (% of the layout) for the landscape two-pane view,
+  // adjustable by dragging the handle. Persisted across sessions.
+  const TUNER_MIN = 15;
+  const TUNER_MAX = 50;
+  const TUNER_DEFAULT = 25;
+  const [tunerPct, setTunerPct] = useState(() => {
+    const v = parseFloat(localStorage.getItem('wt-tuner-width-pct') ?? '');
+    return Number.isFinite(v) ? Math.min(TUNER_MAX, Math.max(TUNER_MIN, v)) : TUNER_DEFAULT;
+  });
+  const layoutRef = useRef<HTMLDivElement>(null);
+
+  const onTunerResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    const rect = layoutRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    let latest = tunerPct;
+    const move = (ev: PointerEvent) => {
+      latest = Math.min(TUNER_MAX, Math.max(TUNER_MIN, ((rect.right - ev.clientX) / rect.width) * 100));
+      setTunerPct(latest);
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      localStorage.setItem('wt-tuner-width-pct', latest.toFixed(1));
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  };
+
+  const resetTunerWidth = () => {
+    setTunerPct(TUNER_DEFAULT);
+    localStorage.setItem('wt-tuner-width-pct', String(TUNER_DEFAULT));
+  };
+
   const micRef = useRef<Awaited<ReturnType<typeof startMic>> | null>(null);
   const detectorRef = useRef<LivePitchDetector | null>(null);
   const onsetRef = useRef<EnergyOnsetDetector | null>(null);
@@ -289,9 +326,10 @@ export default function Practice() {
 
   return (
     // On short landscape screens (phone rotated sideways) switch to a
-    // two-pane cockpit: score on the left 3/4, tuner on the right 1/4.
-    <div className="space-y-3 shortwide:grid shortwide:grid-cols-4 shortwide:gap-3 shortwide:space-y-0 shortwide:items-start">
-      <div className="space-y-3 shortwide:space-y-2 shortwide:col-span-3">
+    // two-pane cockpit: score on the left, tuner on the right. The tuner
+    // pane width is user-adjustable by dragging the handle between panes.
+    <div ref={layoutRef} className="space-y-3 shortwide:flex shortwide:space-y-0 shortwide:items-start">
+      <div className="space-y-3 shortwide:space-y-2 shortwide:flex-1 shortwide:min-w-0">
         {phase === 'init' && (
           <div className="text-muted font-bold" data-testid="practice-init">🎤 マイクを準備しています…</div>
         )}
@@ -348,8 +386,20 @@ export default function Practice() {
         )}
         </div>
       </div>
+      {/* Drag handle to resize the tuner pane (short landscape only) */}
+      <div
+        className="hidden shortwide:flex items-center justify-center self-stretch px-1.5 cursor-col-resize touch-none select-none"
+        onPointerDown={onTunerResizeStart}
+        onDoubleClick={resetTunerWidth}
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="チューナーの幅を調整"
+        data-testid="tuner-resize-handle"
+      >
+        <div className="w-1.5 h-16 rounded-full bg-line hover:bg-pop-violet transition-colors" />
+      </div>
       {/* Right pane tuner (short landscape only) */}
-      <div className="hidden shortwide:block shortwide:col-span-1">
+      <div className="hidden shortwide:block shrink-0" style={{ width: `${tunerPct}%` }}>
         <PitchMeter cents={liveCents} noteName={liveNote} />
       </div>
     </div>
