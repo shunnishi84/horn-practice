@@ -4,9 +4,11 @@ export class Metronome {
   private nextBeat = 0;
   constructor(private ctx: AudioContext, private bpm: number, private onBeat?: (beatIndex: number) => void) {}
 
-  start() {
+  // startTime: AudioContext time of beat 0. Pass the same anchor used for
+  // visual progress so clicks and the scroller share one clock.
+  start(startTime?: number) {
     if (this.ctx.state === 'suspended') this.ctx.resume();
-    this.startTime = this.ctx.currentTime;
+    this.startTime = startTime ?? this.ctx.currentTime;
     this.nextBeat = 0;
     const tick = () => {
       const beatDur = 60 / this.bpm;
