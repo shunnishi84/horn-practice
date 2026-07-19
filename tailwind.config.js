@@ -3,6 +3,11 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        // Phone in landscape: wide but vertically cramped. Desktop stays
+        // unaffected because of the max-height condition.
+        shortwide: { raw: '(orientation: landscape) and (max-height: 520px)' },
+      },
       colors: {
         base: 'var(--c-base)',
         surface: 'var(--c-surface)',

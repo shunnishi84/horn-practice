@@ -288,46 +288,51 @@ export default function Practice() {
   }
 
   return (
-    <div className="space-y-3">
-      {phase === 'init' && (
-        <div className="text-muted font-bold" data-testid="practice-init">🎤 マイクを準備しています…</div>
-      )}
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-extrabold">🎼 {preset.title}</h1>
-        <div className="text-sm font-bold text-pop-violet">{beatsPerBar}/4 · ♩ = {bpm}</div>
-      </div>
-      <PitchMeter cents={liveCents} noteName={liveNote} />
-      {phase === 'countdown' && <Countdown value={countdownVal} />}
-      <ScoreScroller
-        notes={preset.notes}
-        bpm={bpm}
-        elapsedMs={elapsedMs}
-        transposition={settings.transposition}
-        timeSignature={{ numerator: beatsPerBar, denominator: 4 }}
-        perNoteStatus={perNoteStatus}
-        liveCents={liveCents}
-      />
-      <div className="flex gap-2">
+    // On short landscape screens (phone rotated sideways) switch to a
+    // two-pane cockpit: score on the left 3/4, tuner on the right 1/4.
+    <div className="space-y-3 shortwide:grid shortwide:grid-cols-4 shortwide:gap-3 shortwide:space-y-0 shortwide:items-start">
+      <div className="space-y-3 shortwide:space-y-2 shortwide:col-span-3">
+        {phase === 'init' && (
+          <div className="text-muted font-bold" data-testid="practice-init">🎤 マイクを準備しています…</div>
+        )}
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl shortwide:text-base font-extrabold">🎼 {preset.title}</h1>
+          <div className="text-sm font-bold text-pop-violet">{beatsPerBar}/4 · ♩ = {bpm}</div>
+        </div>
+        <div className="shortwide:hidden">
+          <PitchMeter cents={liveCents} noteName={liveNote} />
+        </div>
+        {phase === 'countdown' && <Countdown value={countdownVal} />}
+        <ScoreScroller
+          notes={preset.notes}
+          bpm={bpm}
+          elapsedMs={elapsedMs}
+          transposition={settings.transposition}
+          timeSignature={{ numerator: beatsPerBar, denominator: 4 }}
+          perNoteStatus={perNoteStatus}
+          liveCents={liveCents}
+        />
+        <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => {
             pauseRef.current = !pauseRef.current;
             setPhase((p) => (p === 'play' ? 'paused' : 'play'));
           }}
-          className="btn-sub"
+          className="btn-sub shortwide:px-4 shortwide:py-1.5 shortwide:text-sm"
           data-testid="pause-btn"
         >
           {phase === 'paused' ? '▶️ 再開' : '⏸️ 一時停止'}
         </button>
         <button
           onClick={() => abort(true)}
-          className="rounded-full px-5 py-2.5 font-bold text-white bg-gradient-to-r from-pop-orange to-pop-yellow shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
+          className="rounded-full px-5 py-2.5 shortwide:px-4 shortwide:py-1.5 shortwide:text-sm font-bold text-white bg-gradient-to-r from-pop-orange to-pop-yellow shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
           data-testid="finish-now"
         >
           🏁 ここまでで終了
         </button>
         <button
           onClick={() => abort(false)}
-          className="rounded-full px-5 py-2.5 font-bold text-white bg-pop-rose shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
+          className="rounded-full px-5 py-2.5 shortwide:px-4 shortwide:py-1.5 shortwide:text-sm font-bold text-white bg-pop-rose shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
           data-testid="abort-discard"
         >
           中断（破棄）
@@ -341,6 +346,11 @@ export default function Practice() {
             E2E: 即終了
           </button>
         )}
+        </div>
+      </div>
+      {/* Right pane tuner (short landscape only) */}
+      <div className="hidden shortwide:block shortwide:col-span-1">
+        <PitchMeter cents={liveCents} noteName={liveNote} />
       </div>
     </div>
   );

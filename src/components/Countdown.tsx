@@ -7,18 +7,18 @@ interface Props {
 export default function Countdown({ value }: Props) {
   return (
     <div
-      className="card border-pop-pink flex items-center justify-center gap-5 p-4"
+      className="card border-pop-pink flex items-center justify-center gap-5 shortwide:gap-3 p-4 shortwide:p-1.5"
       data-testid="countdown-overlay"
     >
-      <span className="text-4xl animate-floaty">🎺</span>
+      <span className="text-4xl shortwide:text-2xl animate-floaty">🎺</span>
       <span
         key={value}
-        className={`font-extrabold text-pop-gradient animate-popin text-center ${value === 0 ? 'text-4xl' : 'text-6xl w-16'}`}
+        className={`font-extrabold text-pop-gradient animate-popin text-center ${value === 0 ? 'text-4xl shortwide:text-2xl' : 'text-6xl shortwide:text-3xl w-16 shortwide:w-9'}`}
         data-testid="countdown-value"
       >
         {value === 0 ? 'スタート！' : value}
       </span>
-      <span className="text-sm font-bold text-muted">
+      <span className="text-sm shortwide:text-xs font-bold text-muted">
         最初の音符はラインの位置から始まります 👇
       </span>
     </div>
