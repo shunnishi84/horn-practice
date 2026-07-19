@@ -28,6 +28,7 @@ export default function Practice() {
   const recordSession = useAppStore((s) => s.recordSession);
 
   const bpm = parseInt(params.get('bpm') ?? '') || preset?.defaultBpm || 80;
+  const beatsPerBar = parseInt(params.get('ts') ?? '') || preset?.timeSignature.numerator || 4;
 
   const [phase, setPhase] = useState<'init' | 'countdown' | 'play' | 'paused' | 'done' | 'error'>('init');
   const [countdownVal, setCountdownVal] = useState(3);
@@ -110,7 +111,7 @@ export default function Practice() {
     startTsRef.current = performance.now();
     samplesRef.current = [];
     if (settings.metronomeOn && micRef.current && !isE2E) {
-      metronomeRef.current = new Metronome(micRef.current.ctx, bpm);
+      metronomeRef.current = new Metronome(micRef.current.ctx, bpm, undefined, beatsPerBar);
       metronomeRef.current.start(ctxStartTime);
     }
 
@@ -293,7 +294,7 @@ export default function Practice() {
       )}
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-extrabold">🎼 {preset.title}</h1>
-        <div className="text-sm font-bold text-pop-violet">♩ = {bpm}</div>
+        <div className="text-sm font-bold text-pop-violet">{beatsPerBar}/4 · ♩ = {bpm}</div>
       </div>
       <PitchMeter cents={liveCents} noteName={liveNote} />
       {phase === 'countdown' && <Countdown value={countdownVal} />}
@@ -302,6 +303,7 @@ export default function Practice() {
         bpm={bpm}
         elapsedMs={elapsedMs}
         transposition={settings.transposition}
+        timeSignature={{ numerator: beatsPerBar, denominator: 4 }}
         perNoteStatus={perNoteStatus}
         liveCents={liveCents}
       />

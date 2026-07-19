@@ -2,13 +2,14 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import type { NoteEvent } from '../types';
 import { concertToWritten } from '../music/transposition';
 import type { Transposition } from '../types';
-import { StaffLines, TrebleClef, StaffNoteGlyph, StaffRestGlyph, STAFF_HEIGHT } from './StaffBits';
+import { StaffLines, TrebleClef, TimeSignatureGlyph, StaffNoteGlyph, StaffRestGlyph, STAFF_HEIGHT, STAFF_TOP, STAFF_BOTTOM } from './StaffBits';
 
 interface Props {
   notes: NoteEvent[];
   bpm: number;
   elapsedMs: number;
   transposition: Transposition;
+  timeSignature: { numerator: number; denominator: number };
   perNoteStatus?: Record<number, 'good' | 'warn' | 'bad' | undefined>;
   liveCents?: number | null;
 }
@@ -22,7 +23,7 @@ const STATUS_COLORS: Record<string, { head: string; bar: string }> = {
   pending: { head: 'bg-pop-violet border-pop-violet', bar: 'bg-pop-violet/30' },
 };
 
-export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, perNoteStatus, liveCents }: Props) {
+export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, timeSignature, perNoteStatus, liveCents }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const beatsElapsed = (elapsedMs / 1000) * (bpm / 60);
   // The now-line sits at 50% of the container; notes must be offset by the
@@ -53,6 +54,7 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
       <div className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-pop-pink to-pop-orange z-10" style={{ left: '50%' }} />
       <StaffLines />
       <TrebleClef />
+      <TimeSignatureGlyph numerator={timeSignature.numerator} denominator={timeSignature.denominator} />
       {/* Notes */}
       <div
         className="absolute top-0 bottom-0"
@@ -62,6 +64,23 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
           willChange: 'transform',
         }}
       >
+        {/* Beat / bar gridlines */}
+        {Array.from({ length: Math.ceil(totalBeats) + 1 }, (_, b) => {
+          const isBar = b % timeSignature.numerator === 0;
+          return (
+            <div
+              key={`grid-${b}`}
+              className="absolute bg-muted"
+              style={{
+                left: b * PX_PER_BEAT - (isBar ? 1 : 0.5),
+                width: isBar ? 2 : 1,
+                top: STAFF_TOP,
+                height: STAFF_BOTTOM - STAFF_TOP,
+                opacity: isBar ? 0.75 : 0.28,
+              }}
+            />
+          );
+        })}
         {notes.map((n, idx) => {
           const x = n.startBeat * PX_PER_BEAT;
           const w = n.durationBeats * PX_PER_BEAT - 4;
