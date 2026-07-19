@@ -29,21 +29,21 @@ export default function Settings() {
         </select>
       </Field>
       <Field label={`🎚️ チューニング基準: ${settings.tuningHz} Hz`}>
-        <input type="range" min={415} max={470} step={1} value={settings.tuningHz}
-          onChange={(e) => updateSettings({ tuningHz: parseInt(e.target.value) })}
-          data-testid="tuning-hz" />
+        <SliderWithSteppers min={415} max={470} value={settings.tuningHz}
+          onChange={(v) => updateSettings({ tuningHz: v })}
+          testId="tuning-hz" />
       </Field>
       <Field label={`🎯 許容セント数: ±${settings.pitchToleranceCents}¢`}>
-        <input type="range" min={5} max={50} value={settings.pitchToleranceCents}
-          onChange={(e) => updateSettings({ pitchToleranceCents: parseInt(e.target.value) })} />
+        <SliderWithSteppers min={5} max={50} value={settings.pitchToleranceCents}
+          onChange={(v) => updateSettings({ pitchToleranceCents: v })} />
       </Field>
       <Field label={`⏰ 許容タイミング: ±${settings.timingToleranceMs} ms`}>
-        <input type="range" min={20} max={200} value={settings.timingToleranceMs}
-          onChange={(e) => updateSettings({ timingToleranceMs: parseInt(e.target.value) })} />
+        <SliderWithSteppers min={20} max={200} value={settings.timingToleranceMs}
+          onChange={(v) => updateSettings({ timingToleranceMs: v })} />
       </Field>
       <Field label={`📏 音価許容比率: ±${Math.round(settings.durationToleranceRatio * 100)}%`}>
-        <input type="range" min={5} max={30} value={Math.round(settings.durationToleranceRatio * 100)}
-          onChange={(e) => updateSettings({ durationToleranceRatio: parseInt(e.target.value) / 100 })} />
+        <SliderWithSteppers min={5} max={30} value={Math.round(settings.durationToleranceRatio * 100)}
+          onChange={(v) => updateSettings({ durationToleranceRatio: v / 100 })} />
       </Field>
       <Field label="🥁 メトロノーム">
         <label className="flex items-center gap-2">
@@ -63,6 +63,27 @@ export default function Settings() {
           <option value="light">ライト</option>
         </select>
       </Field>
+    </div>
+  );
+}
+
+function SliderWithSteppers({ min, max, value, onChange, testId }: {
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+  testId?: string;
+}) {
+  const step = (delta: number) => onChange(Math.min(max, Math.max(min, value + delta)));
+  const btnClass =
+    'w-8 h-8 shrink-0 rounded-full bg-surface border-2 border-line text-ink font-bold leading-none transition hover:border-pop-violet disabled:opacity-40 disabled:hover:border-line';
+  return (
+    <div className="flex items-center gap-2">
+      <button type="button" className={btnClass} onClick={() => step(-1)} disabled={value <= min} aria-label="減らす">−</button>
+      <input type="range" min={min} max={max} step={1} value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        data-testid={testId} />
+      <button type="button" className={btnClass} onClick={() => step(1)} disabled={value >= max} aria-label="増やす">＋</button>
     </div>
   );
 }
