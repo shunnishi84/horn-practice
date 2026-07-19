@@ -41,15 +41,15 @@ export default function App() {
   }
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
-    `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-gradient-to-r from-pop-violet to-pop-pink text-white shadow-pop' : 'text-muted hover:bg-surface2 hover:text-ink'}`;
+    `px-4 py-2 shortwide:px-2.5 shortwide:py-1 rounded-full text-sm shortwide:text-xs font-bold transition ${isActive ? 'bg-gradient-to-r from-pop-violet to-pop-pink text-white shadow-pop' : 'text-muted hover:bg-surface2 hover:text-ink'}`;
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="h-1.5 bg-gradient-to-r from-pop-pink via-pop-yellow via-pop-teal to-pop-violet" />
+      <div className="h-1.5 shortwide:h-1 bg-gradient-to-r from-pop-pink via-pop-yellow via-pop-teal to-pop-violet" />
       <header className="bg-surface border-b-2 border-line sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
-          <NavLink to="/" className="flex items-center gap-2 text-xl font-extrabold">
-            <span className="text-2xl">🎺</span>
+        <div className="max-w-5xl mx-auto px-4 py-3 shortwide:py-1.5 flex items-center justify-between gap-4 flex-wrap">
+          <NavLink to="/" className="flex items-center gap-2 text-xl shortwide:text-base font-extrabold">
+            <span className="text-2xl shortwide:text-lg">🎺</span>
             <span className="text-pop-gradient">WindTrainer</span>
           </NavLink>
           <nav className="flex gap-1.5 flex-wrap items-center" data-testid="main-nav">
@@ -81,7 +81,7 @@ export default function App() {
           </nav>
         </div>
       </header>
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-6">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-6 shortwide:py-2">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/presets" element={<PresetSelect />} />
@@ -94,7 +94,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-      <footer className="text-center text-xs font-bold text-muted py-4">
+      <footer className="text-center text-xs font-bold text-muted py-4 shortwide:hidden">
         🎵 WindTrainer · オフラインで動く管楽器練習補助アプリ 🎵
       </footer>
     </div>

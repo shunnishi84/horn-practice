@@ -8,7 +8,7 @@ export default function PitchMeter({ cents, noteName }: Props) {
   const pct = ((clamped + 50) / 100) * 100;
   const inTune = cents != null && Math.abs(cents) <= 10;
   return (
-    <div className="card p-4" data-testid="pitch-meter">
+    <div className="card p-4 shortwide:p-3" data-testid="pitch-meter">
       <div className="flex justify-between text-xs font-bold text-muted mb-2">
         <span>-50¢</span>
         <span className={`text-base ${inTune ? 'text-pop-teal' : 'text-ink'}`}>{noteName ?? '—'}</span>
