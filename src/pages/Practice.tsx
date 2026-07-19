@@ -266,16 +266,16 @@ export default function Practice() {
   };
 
   if (!preset) {
-    return <div>プリセットが見つかりません</div>;
+    return <div className="card p-6 text-center font-bold">😢 プリセットが見つかりません</div>;
   }
 
   if (phase === 'error') {
     return (
-      <div className="space-y-4" data-testid="practice-error">
-        <h1 className="text-xl font-bold text-rose-400">マイクが利用できません</h1>
-        <p className="text-slate-300">{errorMsg}</p>
-        <p className="text-slate-400 text-sm">ブラウザのサイト設定からマイクの許可を確認してください。</p>
-        <button onClick={() => navigate('/presets')} className="bg-slate-700 px-4 py-2 rounded">戻る</button>
+      <div className="card p-6 space-y-4" data-testid="practice-error">
+        <h1 className="text-xl font-extrabold text-pop-rose">🎤 マイクが利用できません</h1>
+        <p className="font-bold">{errorMsg}</p>
+        <p className="text-muted text-sm font-bold">ブラウザのサイト設定からマイクの許可を確認してください。</p>
+        <button onClick={() => navigate('/presets')} className="btn-sub">戻る</button>
       </div>
     );
   }
@@ -283,12 +283,12 @@ export default function Practice() {
   return (
     <div className="space-y-3">
       {phase === 'init' && (
-        <div className="text-slate-300" data-testid="practice-init">マイクを準備しています…</div>
+        <div className="text-muted font-bold" data-testid="practice-init">🎤 マイクを準備しています…</div>
       )}
       {phase === 'countdown' && <Countdown value={countdownVal} />}
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">{preset.title}</h1>
-        <div className="text-sm text-slate-400">♩ = {bpm}</div>
+        <h1 className="text-xl font-extrabold">🎼 {preset.title}</h1>
+        <div className="text-sm font-bold text-pop-violet">♩ = {bpm}</div>
       </div>
       <PitchMeter cents={liveCents} noteName={liveNote} />
       <ScoreScroller
@@ -305,21 +305,21 @@ export default function Practice() {
             pauseRef.current = !pauseRef.current;
             setPhase((p) => (p === 'play' ? 'paused' : 'play'));
           }}
-          className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded"
+          className="btn-sub"
           data-testid="pause-btn"
         >
-          {phase === 'paused' ? '再開' : '一時停止'}
+          {phase === 'paused' ? '▶️ 再開' : '⏸️ 一時停止'}
         </button>
         <button
           onClick={() => abort(true)}
-          className="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded"
+          className="rounded-full px-5 py-2.5 font-bold text-white bg-gradient-to-r from-pop-orange to-pop-yellow shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
           data-testid="finish-now"
         >
-          ここまでで終了
+          🏁 ここまでで終了
         </button>
         <button
           onClick={() => abort(false)}
-          className="bg-rose-700 hover:bg-rose-600 px-4 py-2 rounded"
+          className="rounded-full px-5 py-2.5 font-bold text-white bg-pop-rose shadow-pop transition hover:-translate-y-0.5 active:translate-y-0"
           data-testid="abort-discard"
         >
           中断（破棄）
@@ -328,7 +328,7 @@ export default function Practice() {
           <button
             onClick={finalize}
             data-testid="e2e-finalize"
-            className="bg-purple-600 px-4 py-2 rounded"
+            className="rounded-full px-5 py-2.5 font-bold text-white bg-pop-violet shadow-pop"
           >
             E2E: 即終了
           </button>

@@ -2,20 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
 html, body, #root {
   height: 100%;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+  color-scheme: dark;
+  --c-base: #1b1240;
+  --c-surface: #281b55;
+  --c-surface2: #221646;
+  --c-ink: #f8f2ff;
+  --c-muted: #b5a6dd;
+  --c-line: #3e2d75;
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--c-base);
+  background-image:
+    radial-gradient(circle at 12% 10%, rgba(139, 92, 246, 0.22), transparent 42%),
+    radial-gradient(circle at 88% 6%, rgba(255, 79, 154, 0.18), transparent 38%),
+    radial-gradient(circle at 75% 92%, rgba(56, 189, 248, 0.14), transparent 42%);
+  background-attachment: fixed;
+  color: var(--c-ink);
 }
 
-.theme-light {
-  background-color: #f8fafc;
-  color: #0f172a;
+body.theme-light {
+  color-scheme: light;
+  --c-base: #fff7ee;
+  --c-surface: #ffffff;
+  --c-surface2: #fff0f7;
+  --c-ink: #43305e;
+  --c-muted: #9c86ae;
+  --c-line: #f4dfef;
+  background-image:
+    radial-gradient(circle at 12% 10%, rgba(139, 92, 246, 0.1), transparent 42%),
+    radial-gradient(circle at 88% 6%, rgba(255, 79, 154, 0.1), transparent 38%),
+    radial-gradient(circle at 75% 92%, rgba(56, 189, 248, 0.1), transparent 42%);
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border-2 border-line rounded-2xl shadow-card;
+  }
+  .btn-pop {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-extrabold text-white bg-gradient-to-r from-pop-pink to-pop-orange shadow-pop transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:shadow-none;
+  }
+  .btn-sub {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-bold bg-surface border-2 border-line text-ink transition hover:-translate-y-0.5 hover:border-pop-violet;
+  }
+  .chip {
+    @apply px-4 py-1.5 rounded-full font-bold transition bg-surface border-2 border-line text-muted hover:border-pop-pink hover:text-pop-pink;
+  }
+  .chip-on {
+    @apply px-4 py-1.5 rounded-full font-bold transition text-white border-2 border-transparent bg-gradient-to-r from-pop-violet to-pop-pink shadow-pop;
+  }
+  .select-pop {
+    @apply bg-surface border-2 border-line rounded-xl px-3 py-1.5 font-bold text-ink;
+  }
+  .text-pop-gradient {
+    background-image: linear-gradient(90deg, #ff4f9a, #ff8c42);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }

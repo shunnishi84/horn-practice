@@ -31,18 +31,18 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden bg-slate-950 rounded-lg border border-slate-700"
+      className="relative overflow-hidden bg-surface2 rounded-2xl border-2 border-line shadow-card"
       style={{ height: STAFF_H }}
       data-testid="score-scroller"
     >
       {/* Center line */}
-      <div className="absolute top-0 bottom-0 w-px bg-rose-500 z-10" style={{ left: '50%' }} />
+      <div className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-pop-pink to-pop-orange z-10" style={{ left: '50%' }} />
       {/* Staff lines */}
       <div className="absolute inset-0 pointer-events-none">
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="absolute left-0 right-0 h-px bg-slate-600"
+            className="absolute left-0 right-0 h-px bg-line"
             style={{ top: `${40 + i * 20}px` }}
           />
         ))}
@@ -62,17 +62,17 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
           const status = perNoteStatus?.[idx];
           const color =
             status === 'good'
-              ? 'bg-emerald-500/70 border-emerald-300'
+              ? 'bg-pop-teal/80 border-pop-teal'
               : status === 'warn'
-                ? 'bg-yellow-400/70 border-yellow-200'
+                ? 'bg-pop-yellow/80 border-pop-yellow'
                 : status === 'bad'
-                  ? 'bg-rose-500/70 border-rose-300'
-                  : 'bg-slate-600/70 border-slate-300';
+                  ? 'bg-pop-rose/80 border-pop-rose'
+                  : 'bg-pop-violet/50 border-pop-violet';
           const written = n.isRest ? '—' : concertToWritten(n.pitch, transposition);
           return (
             <div
               key={idx}
-              className={`absolute rounded border-2 ${color} flex items-center justify-center text-sm font-mono text-white`}
+              className={`absolute rounded-xl border-2 ${color} flex items-center justify-center text-sm font-extrabold text-white`}
               style={{ left: x, width: w, top: 70, height: 40 }}
               data-testid={`note-${idx}`}
               data-status={status ?? 'pending'}
@@ -85,7 +85,7 @@ export default function ScoreScroller({ notes, bpm, elapsedMs, transposition, pe
       {/* Live cents indicator */}
       {liveCents != null && (
         <div
-          className="absolute z-20 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-slate-800/80 text-xs text-slate-100 border border-slate-600"
+          className="absolute z-20 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-surface text-xs font-bold border-2 border-line"
           style={{ top: 4 }}
         >
           {liveCents > 0 ? '↑' : '↓'} {Math.abs(liveCents).toFixed(1)}¢

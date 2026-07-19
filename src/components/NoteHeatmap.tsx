@@ -33,11 +33,11 @@ export default function NoteHeatmap({ stats, octaveFilter = 'all', directionFilt
   }
 
   const colorOf = (score: number, n: number) => {
-    if (n === 0) return 'bg-slate-700 text-slate-500';
-    if (score >= 90) return 'bg-emerald-500 text-emerald-950';
-    if (score >= 75) return 'bg-yellow-400 text-yellow-950';
-    if (score >= 50) return 'bg-orange-400 text-orange-950';
-    return 'bg-rose-500 text-rose-950';
+    if (n === 0) return 'bg-surface2 border-line text-muted';
+    if (score >= 90) return 'bg-pop-teal border-pop-teal text-white';
+    if (score >= 75) return 'bg-pop-yellow border-pop-yellow text-yellow-950';
+    if (score >= 50) return 'bg-pop-orange border-pop-orange text-white';
+    return 'bg-pop-rose border-pop-rose text-white';
   };
 
   return (
@@ -49,7 +49,7 @@ export default function NoteHeatmap({ stats, octaveFilter = 'all', directionFilt
         return (
           <div
             key={pc}
-            className={`rounded p-2 text-center ${colorOf(avgScore, v.n)}`}
+            className={`rounded-xl border-2 p-2 text-center ${colorOf(avgScore, v.n)}`}
             title={v.n ? `${pc}: 平均 ${avgScore}点 / ズレ ${avgDev}¢` : `${pc}: データなし`}
           >
             <div className="font-bold">{pc}</div>

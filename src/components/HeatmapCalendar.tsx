@@ -28,12 +28,12 @@ export default function HeatmapCalendar({ daily, metric, days = 365 }: Props) {
 
   const max = Math.max(1, ...cells.map((c) => c.value));
   const colorOf = (v: number) => {
-    if (v <= 0) return 'bg-slate-700';
+    if (v <= 0) return 'bg-line';
     const t = v / max;
-    if (t < 0.25) return 'bg-emerald-900';
-    if (t < 0.5) return 'bg-emerald-700';
-    if (t < 0.75) return 'bg-emerald-500';
-    return 'bg-emerald-300';
+    if (t < 0.25) return 'bg-pop-pink/25';
+    if (t < 0.5) return 'bg-pop-pink/50';
+    if (t < 0.75) return 'bg-pop-pink/75';
+    return 'bg-pop-pink';
   };
 
   return (
