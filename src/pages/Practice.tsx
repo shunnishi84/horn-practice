@@ -291,12 +291,12 @@ export default function Practice() {
       {phase === 'init' && (
         <div className="text-muted font-bold" data-testid="practice-init">🎤 マイクを準備しています…</div>
       )}
-      {phase === 'countdown' && <Countdown value={countdownVal} />}
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-extrabold">🎼 {preset.title}</h1>
         <div className="text-sm font-bold text-pop-violet">♩ = {bpm}</div>
       </div>
       <PitchMeter cents={liveCents} noteName={liveNote} />
+      {phase === 'countdown' && <Countdown value={countdownVal} />}
       <ScoreScroller
         notes={preset.notes}
         bpm={bpm}
